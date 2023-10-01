@@ -14,8 +14,8 @@ const theme = {
         main: "System",
     },
     fontWeights: {
-        normal: "400",
-        bold: "700",
+        normal: 400,
+        bold: 700,
     },
 };
 
