@@ -1,6 +1,7 @@
 import { Button, View } from "react-native";
 import FormikTextInput from "./FormikTextInput";
 import { Formik } from "formik";
+import validationSchema from "../schemas/signInValidationSchema";
 
 const initialValues = {
     username: "",
@@ -11,7 +12,10 @@ const onSubmit = (values) => {
 };
 const SignIn = () => {
     return (
-        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+        <Formik
+            initialValues={initialValues}
+            onSubmit={onSubmit}
+            validationSchema={validationSchema}>
             {({ handleSubmit }) => (
                 <View>
                     <FormikTextInput name='username' onSubmit={handleSubmit} />

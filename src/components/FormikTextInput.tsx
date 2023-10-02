@@ -7,6 +7,7 @@ import theme from "../theme";
 const styles = StyleSheet.create({
     errorText: {
         marginTop: 5,
+        color: "#d73a4a",
     },
     textInput: {
         borderColor: "black",
