@@ -1,6 +1,9 @@
 import { FlatList, View, StyleSheet, Image, Pressable } from "react-native";
+import { GET_REPOSITORIES } from "../graphql/queries";
+import { useQuery } from "@apollo/client";
 import Text from "./Text";
 import theme from "../theme";
+
 const styles = StyleSheet.create({
     separator: {
         height: 10,
@@ -28,54 +31,6 @@ const styles = StyleSheet.create({
         gap: 8,
     },
 });
-
-const repositories = [
-    {
-        id: "jaredpalmer.formik",
-        fullName: "jaredpalmer/formik",
-        description: "Build forms in React, without the tears",
-        language: "TypeScript",
-        forksCount: 1589,
-        stargazersCount: 21553,
-        ratingAverage: 88,
-        reviewCount: 4,
-        ownerAvatarUrl: "https://avatars2.githubusercontent.com/u/4060187?v=4",
-    },
-    {
-        id: "rails.rails",
-        fullName: "rails/rails",
-        description: "Ruby on Rails",
-        language: "Ruby",
-        forksCount: 18349,
-        stargazersCount: 45377,
-        ratingAverage: 100,
-        reviewCount: 2,
-        ownerAvatarUrl: "https://avatars1.githubusercontent.com/u/4223?v=4",
-    },
-    {
-        id: "django.django",
-        fullName: "django/django",
-        description: "The Web framework for perfectionists with deadlines.",
-        language: "Python",
-        forksCount: 21015,
-        stargazersCount: 48496,
-        ratingAverage: 73,
-        reviewCount: 5,
-        ownerAvatarUrl: "https://avatars2.githubusercontent.com/u/27804?v=4",
-    },
-    {
-        id: "reduxjs.redux",
-        fullName: "reduxjs/redux",
-        description: "Predictable state container for JavaScript apps",
-        language: "TypeScript",
-        forksCount: 13902,
-        stargazersCount: 52869,
-        ratingAverage: 0,
-        reviewCount: 0,
-        ownerAvatarUrl: "https://avatars3.githubusercontent.com/u/13142323?v=4",
-    },
-];
-
 const ItemSeparator = () => <View style={styles.separator} />;
 
 const Item = ({
@@ -90,38 +45,134 @@ const Item = ({
 }) => (
     <View style={{ backgroundColor: "#fff" }}>
         <Image style={styles.smallLogo} source={{ uri: ownerAvatarUrl }} />
-        <Text fontWeight='bold' fontSize='subheading'>
+        <Text
+            fontWeight='bold'
+            fontSize='subheading'
+            color={undefined}
+            style={undefined}>
             {fullName}
         </Text>
-        <Text color='textSecondary'>{description}</Text>
+        <Text
+            color='textSecondary'
+            fontSize={undefined}
+            fontWeight={undefined}
+            style={undefined}>
+            {description}
+        </Text>
         <Pressable style={styles.languageBtn}>
-            <Text style={{ color: "#fff" }}>{language}</Text>
+            <Text
+                style={{ color: "#fff" }}
+                color={undefined}
+                fontSize={undefined}
+                fontWeight={undefined}>
+                {language}
+            </Text>
         </Pressable>
         <View style={styles.bottomBar}>
             <View style={styles.statsItem}>
-                <Text fontWeight='bold'>{formatCount(stars)}</Text>
-                <Text>Stars </Text>
+                <Text
+                    fontWeight='bold'
+                    color={undefined}
+                    fontSize={undefined}
+                    style={undefined}>
+                    {formatCount(stars)}
+                </Text>
+                <Text
+                    color={undefined}
+                    fontSize={undefined}
+                    fontWeight={undefined}
+                    style={undefined}>
+                    Stars{" "}
+                </Text>
             </View>
             <View style={styles.statsItem}>
-                <Text fontWeight='bold'>{formatCount(forks)}</Text>
-                <Text>Forks</Text>
+                <Text
+                    fontWeight='bold'
+                    color={undefined}
+                    fontSize={undefined}
+                    style={undefined}>
+                    {formatCount(forks)}
+                </Text>
+                <Text
+                    color={undefined}
+                    fontSize={undefined}
+                    fontWeight={undefined}
+                    style={undefined}>
+                    Forks
+                </Text>
             </View>
             <View style={styles.statsItem}>
-                <Text fontWeight='bold'>{formatCount(reviews)}</Text>
-                <Text>Reviews</Text>
+                <Text
+                    fontWeight='bold'
+                    color={undefined}
+                    fontSize={undefined}
+                    style={undefined}>
+                    {formatCount(reviews)}
+                </Text>
+                <Text
+                    color={undefined}
+                    fontSize={undefined}
+                    fontWeight={undefined}
+                    style={undefined}>
+                    Reviews
+                </Text>
             </View>
             <View style={styles.statsItem}>
-                <Text fontWeight='bold'>{formatCount(rating)}</Text>
-                <Text>Rating</Text>
+                <Text
+                    fontWeight='bold'
+                    color={undefined}
+                    fontSize={undefined}
+                    style={undefined}>
+                    {formatCount(rating)}
+                </Text>
+                <Text
+                    color={undefined}
+                    fontSize={undefined}
+                    fontWeight={undefined}
+                    style={undefined}>
+                    Rating
+                </Text>
             </View>
         </View>
     </View>
 );
 
 const RepositoryList = () => {
+    const { data, error, loading } = useQuery(GET_REPOSITORIES, {
+        fetchPolicy: "cache-and-network",
+    });
+
+    if (loading) {
+        return (
+            <View>
+                <Text
+                    color={undefined}
+                    fontSize={undefined}
+                    fontWeight={undefined}
+                    style={undefined}>
+                    Is loading
+                </Text>
+            </View>
+        );
+    }
+    if (error) {
+        return (
+            <View>
+                <Text
+                    color={undefined}
+                    fontSize={undefined}
+                    fontWeight={undefined}
+                    style={undefined}>
+                    Error
+                </Text>
+            </View>
+        );
+    }
+    const repositoryNodes =
+        data ? data.repositories.edges.map((edge) => edge.node) : [];
     return (
         <FlatList
-            data={repositories}
+            data={repositoryNodes}
             ItemSeparatorComponent={ItemSeparator}
             renderItem={({ item }) => (
                 <Item
@@ -138,7 +189,7 @@ const RepositoryList = () => {
         />
     );
 };
-const formatCount = (count) => {
+const formatCount = (count: number) => {
     if (count >= 1000) {
         return (count / 1000).toFixed(1) + "k";
     } else {
