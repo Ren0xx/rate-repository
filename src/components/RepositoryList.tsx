@@ -31,7 +31,11 @@ const styles = StyleSheet.create({
         gap: 8,
     },
 });
-const ItemSeparator = () => <View style={styles.separator} />;
+const ItemSeparator = () => (
+    <View style={styles.separator}>
+       { " "} 
+    </View>
+);
 
 const Item = ({
     fullName,
@@ -141,7 +145,6 @@ const RepositoryList = () => {
     const { data, error, loading } = useQuery(GET_REPOSITORIES, {
         fetchPolicy: "cache-and-network",
     });
-
     if (loading) {
         return (
             <View>
@@ -168,28 +171,41 @@ const RepositoryList = () => {
             </View>
         );
     }
-    const repositoryNodes =
-        data ? data.repositories.edges.map((edge) => edge.node) : [];
+    return (
+        <RepositoryListContainer
+            repositories={data.repositories}
+            loading={loading}
+            error={error}
+        />
+    );
+};
+export const RepositoryListContainer = ({ repositories, loading, error }) => {
+    const repositoryNodes = repositories
+        ? repositories.edges.map((edge) => edge.node)
+        : [];
+
     return (
         <FlatList
             data={repositoryNodes}
             ItemSeparatorComponent={ItemSeparator}
             renderItem={({ item }) => (
-                <Item
-                    fullName={item.fullName}
-                    description={item.description}
-                    language={item.language}
-                    stars={item.stargazersCount}
-                    forks={item.forksCount}
-                    reviews={item.reviewCount}
-                    rating={item.ratingAverage}
-                    ownerAvatarUrl={item.ownerAvatarUrl}
-                />
+                <View testID='repositoryItem'>
+                    <Item
+                        fullName={item.fullName}
+                        description={item.description}
+                        language={item.language}
+                        stars={item.stargazersCount}
+                        forks={item.forksCount}
+                        reviews={item.reviewCount}
+                        rating={item.ratingAverage}
+                        ownerAvatarUrl={item.ownerAvatarUrl}
+                    />
+                </View>
             )}
         />
     );
 };
-const formatCount = (count: number) => {
+export const formatCount = (count: number) => {
     if (count >= 1000) {
         return (count / 1000).toFixed(1) + "k";
     } else {

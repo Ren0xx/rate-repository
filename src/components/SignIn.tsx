@@ -4,12 +4,11 @@ import { Formik } from "formik";
 import validationSchema from "../schemas/signInValidationSchema";
 import useSignIn from "../hooks/useSignIn";
 import { useNavigate } from "react-router-native";
-const initialValues = {
-    username: "",
-    password: "",
-};
-
 const SignIn = () => {
+    const initialValues = {
+        username: "",
+        password: "",
+    };
     const [signIn] = useSignIn();
     const navigate = useNavigate();
     const onSubmit = async (values) => {
@@ -22,6 +21,19 @@ const SignIn = () => {
             console.log(e);
         }
     };
+    return (
+        <SignInContainer
+            initialValues={initialValues}
+            onSubmit={onSubmit}
+            validationSchema={validationSchema}
+        />
+    );
+};
+export const SignInContainer = ({
+    initialValues,
+    onSubmit,
+    validationSchema,
+}) => {
     return (
         <Formik
             initialValues={initialValues}
