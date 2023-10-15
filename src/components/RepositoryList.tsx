@@ -3,7 +3,7 @@ import { GET_REPOSITORIES } from "../graphql/queries";
 import { useQuery } from "@apollo/client";
 import Text from "./Text";
 import theme from "../theme";
-
+import { useNavigate } from "react-router-native";
 const styles = StyleSheet.create({
     separator: {
         height: 10,
@@ -31,13 +31,10 @@ const styles = StyleSheet.create({
         gap: 8,
     },
 });
-const ItemSeparator = () => (
-    <View style={styles.separator}>
-       { " "} 
-    </View>
-);
+const ItemSeparator = () => <View style={styles.separator}> </View>;
 
-const Item = ({
+export const Item = ({
+    id,
     fullName,
     description,
     language,
@@ -46,100 +43,119 @@ const Item = ({
     reviews,
     rating,
     ownerAvatarUrl,
-}) => (
-    <View style={{ backgroundColor: "#fff" }}>
-        <Image style={styles.smallLogo} source={{ uri: ownerAvatarUrl }} />
-        <Text
-            fontWeight='bold'
-            fontSize='subheading'
-            color={undefined}
-            style={undefined}>
-            {fullName}
-        </Text>
-        <Text
-            color='textSecondary'
-            fontSize={undefined}
-            fontWeight={undefined}
-            style={undefined}>
-            {description}
-        </Text>
-        <Pressable style={styles.languageBtn}>
-            <Text
-                style={{ color: "#fff" }}
-                color={undefined}
-                fontSize={undefined}
-                fontWeight={undefined}>
-                {language}
-            </Text>
-        </Pressable>
-        <View style={styles.bottomBar}>
-            <View style={styles.statsItem}>
+}) => {
+    const formatCount = (count: number) => {
+        if (count >= 1000) {
+            return (count / 1000).toFixed(1) + "k";
+        } else {
+            return count.toString();
+        }
+    };
+
+    const navigate = useNavigate();
+    const redirect = () => {
+        navigate(id);
+    };
+    return (
+        <View style={{ backgroundColor: "#fff" }} testID='repositoryItem'>
+            <Pressable onPress={redirect}>
+                <Image
+                    style={styles.smallLogo}
+                    source={{ uri: ownerAvatarUrl }}
+                />
                 <Text
                     fontWeight='bold'
+                    fontSize='subheading'
                     color={undefined}
-                    fontSize={undefined}
                     style={undefined}>
-                    {formatCount(stars)}
+                    {fullName}
                 </Text>
                 <Text
-                    color={undefined}
+                    color='textSecondary'
                     fontSize={undefined}
                     fontWeight={undefined}
                     style={undefined}>
-                    Stars{" "}
+                    {description}
                 </Text>
-            </View>
-            <View style={styles.statsItem}>
-                <Text
-                    fontWeight='bold'
-                    color={undefined}
-                    fontSize={undefined}
-                    style={undefined}>
-                    {formatCount(forks)}
-                </Text>
-                <Text
-                    color={undefined}
-                    fontSize={undefined}
-                    fontWeight={undefined}
-                    style={undefined}>
-                    Forks
-                </Text>
-            </View>
-            <View style={styles.statsItem}>
-                <Text
-                    fontWeight='bold'
-                    color={undefined}
-                    fontSize={undefined}
-                    style={undefined}>
-                    {formatCount(reviews)}
-                </Text>
-                <Text
-                    color={undefined}
-                    fontSize={undefined}
-                    fontWeight={undefined}
-                    style={undefined}>
-                    Reviews
-                </Text>
-            </View>
-            <View style={styles.statsItem}>
-                <Text
-                    fontWeight='bold'
-                    color={undefined}
-                    fontSize={undefined}
-                    style={undefined}>
-                    {formatCount(rating)}
-                </Text>
-                <Text
-                    color={undefined}
-                    fontSize={undefined}
-                    fontWeight={undefined}
-                    style={undefined}>
-                    Rating
-                </Text>
-            </View>
+                <Pressable style={styles.languageBtn}>
+                    <Text
+                        style={{ color: "#fff" }}
+                        color={undefined}
+                        fontSize={undefined}
+                        fontWeight={undefined}>
+                        {language}
+                    </Text>
+                </Pressable>
+                <View style={styles.bottomBar}>
+                    <View style={styles.statsItem}>
+                        <Text
+                            fontWeight='bold'
+                            color={undefined}
+                            fontSize={undefined}
+                            style={undefined}>
+                            {formatCount(stars)}
+                        </Text>
+                        <Text
+                            color={undefined}
+                            fontSize={undefined}
+                            fontWeight={undefined}
+                            style={undefined}>
+                            Stars{" "}
+                        </Text>
+                    </View>
+                    <View style={styles.statsItem}>
+                        <Text
+                            fontWeight='bold'
+                            color={undefined}
+                            fontSize={undefined}
+                            style={undefined}>
+                            {formatCount(forks)}
+                        </Text>
+                        <Text
+                            color={undefined}
+                            fontSize={undefined}
+                            fontWeight={undefined}
+                            style={undefined}>
+                            Forks
+                        </Text>
+                    </View>
+                    <View style={styles.statsItem}>
+                        <Text
+                            fontWeight='bold'
+                            color={undefined}
+                            fontSize={undefined}
+                            style={undefined}>
+                            {formatCount(reviews)}
+                        </Text>
+                        <Text
+                            color={undefined}
+                            fontSize={undefined}
+                            fontWeight={undefined}
+                            style={undefined}>
+                            Reviews
+                        </Text>
+                    </View>
+                    <View style={styles.statsItem}>
+                        <Text
+                            fontWeight='bold'
+                            color={undefined}
+                            fontSize={undefined}
+                            style={undefined}>
+                            {formatCount(rating)}
+                        </Text>
+                        <Text
+                            color={undefined}
+                            fontSize={undefined}
+                            fontWeight={undefined}
+                            style={undefined}>
+                            Rating
+                        </Text>
+                    </View>
+                </View>
+            </Pressable>
         </View>
-    </View>
-);
+    );
+};
 
 const RepositoryList = () => {
     const { data, error, loading } = useQuery(GET_REPOSITORIES, {
@@ -189,18 +205,17 @@ export const RepositoryListContainer = ({ repositories, loading, error }) => {
             data={repositoryNodes}
             ItemSeparatorComponent={ItemSeparator}
             renderItem={({ item }) => (
-                <View testID='repositoryItem'>
-                    <Item
-                        fullName={item.fullName}
-                        description={item.description}
-                        language={item.language}
-                        stars={item.stargazersCount}
-                        forks={item.forksCount}
-                        reviews={item.reviewCount}
-                        rating={item.ratingAverage}
-                        ownerAvatarUrl={item.ownerAvatarUrl}
-                    />
-                </View>
+                <Item
+                    id={item.id}
+                    fullName={item.fullName}
+                    description={item.description}
+                    language={item.language}
+                    stars={item.stargazersCount}
+                    forks={item.forksCount}
+                    reviews={item.reviewCount}
+                    rating={item.ratingAverage}
+                    ownerAvatarUrl={item.ownerAvatarUrl}
+                />
             )}
         />
     );

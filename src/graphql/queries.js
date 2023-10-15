@@ -13,6 +13,7 @@ export const GET_REPOSITORIES = gql`
                     language
                     description
                     fullName
+                    id
                 }
             }
         }
@@ -23,6 +24,36 @@ export const IS_LOGGED = gql`
         me {
             id
             username
+        }
+    }
+`;
+export const GET_REPOSITORY = gql`
+    query Repository($repositoryId: ID!) {
+        repository(id: $repositoryId) {
+            id
+            fullName
+            url
+            language
+            stargazersCount
+            ratingAverage
+            ownerAvatarUrl
+            forksCount
+            description
+            reviewCount
+            reviews {
+                edges {
+                    node {
+                        id
+                        text
+                        rating
+                        createdAt
+                        user {
+                            id
+                            username
+                        }
+                    }
+                }
+            }
         }
     }
 `;
