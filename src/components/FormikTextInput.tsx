@@ -17,9 +17,9 @@ const styles = StyleSheet.create({
 });
 type InputProps = {
     name: string;
-    onSubmit: () => void;
+    isMultiline?: boolean;
 };
-const FormikTextInput = ({ name, onSubmit }: InputProps) => {
+const FormikTextInput = ({ name, isMultiline }: InputProps) => {
     const [field, meta, helpers] = useField(name);
     const showError = meta.touched && meta.error;
 
@@ -30,6 +30,7 @@ const FormikTextInput = ({ name, onSubmit }: InputProps) => {
                 onChangeText={(value: string) => helpers.setValue(value)}
                 onBlur={() => helpers.setTouched(true)}
                 value={field.value}
+                multiline={isMultiline || false}
                 placeholder={name}
                 placeholderTextColor={theme.colors.textSecondary}
                 secureTextEntry={name === "password" ? true : false}

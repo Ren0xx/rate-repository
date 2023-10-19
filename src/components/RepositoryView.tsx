@@ -69,6 +69,7 @@ const ReviewItem = ({ review }) => {
 const SingleRepository = () => {
     const { repositoryId } = useParams();
     const { loading, error, data } = useQuery(GET_REPOSITORY, {
+        fetchPolicy: "cache-and-network",
         variables: {
             repositoryId: repositoryId,
         },
@@ -87,7 +88,6 @@ const SingleRepository = () => {
             </View>
         );
     }
-    console.log(data.repository.reviews.edges);
     return (
         <FlatList
             data={data.repository.reviews.edges}

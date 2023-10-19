@@ -1,35 +1,37 @@
 import { Button, View } from "react-native";
 import FormikTextInput from "./FormikTextInput";
 import { Formik } from "formik";
-import validationSchema from "../schemas/signInValidationSchema";
-import useSignIn from "../hooks/useSignIn";
+import validationSchema from "../schemas/reviewFormSchema";
+import useCreateReview from "../hooks/useCreateReview";
 import { useNavigate } from "react-router-native";
-const SignIn = () => {
+const ReviewForm = () => {
     const initialValues = {
-        username: "",
-        password: "",
+        ownerName: "",
+        repositoryName: "",
+        rating: 0,
+        review: "",
     };
-    const [signIn] = useSignIn();
+    const [createReview] = useCreateReview();
     const navigate = useNavigate();
     const onSubmit = async (values) => {
-        const { username, password } = values;
-
+        //const { ownerName, repositoryName, rating, review} = values;
         try {
-            const data = await signIn({ username, password });
-            if (data) navigate("/");
+            const data = await createReview(values);
+            const repositoryId = data.data.createReview.repositoryId;
+            if (data) navigate(repositoryId);
         } catch (e) {
             console.log(e);
         }
     };
     return (
-        <SignInContainer
+        <ReviewFormContainer
             initialValues={initialValues}
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         />
     );
 };
-export const SignInContainer = ({
+export const ReviewFormContainer = ({
     initialValues,
     onSubmit,
     validationSchema,
@@ -41,8 +43,10 @@ export const SignInContainer = ({
             validationSchema={validationSchema}>
             {({ handleSubmit }) => (
                 <View>
-                    <FormikTextInput name='username' />
-                    <FormikTextInput name='password' />
+                    <FormikTextInput name='ownerName' />
+                    <FormikTextInput name='repositoryName' />
+                    <FormikTextInput name='rating' />
+                    <FormikTextInput name='review' isMultiline={true} />
                     <Button title='Submit' onPress={handleSubmit} />
                 </View>
             )}
@@ -50,4 +54,4 @@ export const SignInContainer = ({
     );
 };
 
-export default SignIn;
+export default ReviewForm;

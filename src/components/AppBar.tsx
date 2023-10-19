@@ -29,6 +29,7 @@ const AppBar = () => {
                 horizontal
                 style={{ display: "flex", flexDirection: "row" }}>
                 <AppBarTab name={"Repositories"} to={"/"} />
+                <AppBarTab name={"Create a review"} to={"/create-review"} />
                 {!loading && <SignInOrSignOut data={data} />}
             </ScrollView>
         </View>
