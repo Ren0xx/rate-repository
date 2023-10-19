@@ -18,8 +18,9 @@ const styles = StyleSheet.create({
 type InputProps = {
     name: string;
     isMultiline?: boolean;
+    isPassword?: boolean;
 };
-const FormikTextInput = ({ name, isMultiline }: InputProps) => {
+const FormikTextInput = ({ name, isMultiline, isPassword }: InputProps) => {
     const [field, meta, helpers] = useField(name);
     const showError = meta.touched && meta.error;
 
@@ -33,7 +34,7 @@ const FormikTextInput = ({ name, isMultiline }: InputProps) => {
                 multiline={isMultiline || false}
                 placeholder={name}
                 placeholderTextColor={theme.colors.textSecondary}
-                secureTextEntry={name === "password" ? true : false}
+                secureTextEntry={isPassword}
                 error={showError}
             />
             {showError && (

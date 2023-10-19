@@ -6,6 +6,7 @@ import { IS_LOGGED } from "../graphql/queries";
 import Text from "./Text";
 import useAuthStorage from "../hooks/useAuthStorage";
 import { useApolloClient } from "@apollo/client";
+import { useNavigate } from "react-router-native";
 
 const styles = StyleSheet.create({
     container: {
@@ -29,8 +30,13 @@ const AppBar = () => {
                 horizontal
                 style={{ display: "flex", flexDirection: "row" }}>
                 <AppBarTab name={"Repositories"} to={"/"} />
-                <AppBarTab name={"Create a review"} to={"/create-review"} />
+                {!loading && data.me !== null && (
+                    <AppBarTab name={"Create a review"} to={"/create-review"} />
+                )}
                 {!loading && <SignInOrSignOut data={data} />}
+                {!loading && data.me === null && (
+                    <AppBarTab name={"Sign up"} to={"/sign-up"} />
+                )}
             </ScrollView>
         </View>
     );
@@ -38,10 +44,12 @@ const AppBar = () => {
 const SignInOrSignOut = ({ data }) => {
     const authStorage = useAuthStorage();
     const apolloClient = useApolloClient();
+    const navigate = useNavigate();
 
     const signOut = async () => {
         await authStorage.removeAccessToken();
         apolloClient.resetStore();
+        navigate("/");
     };
     if (data.me !== null) {
         return (

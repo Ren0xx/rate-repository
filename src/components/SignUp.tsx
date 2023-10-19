@@ -1,22 +1,28 @@
 import { Button, View } from "react-native";
 import FormikTextInput from "./FormikTextInput";
 import { Formik } from "formik";
-import validationSchema from "../schemas/signInValidationSchema";
+import validationSchema from "../schemas/signUpValidationSchema";
 import useSignIn from "../hooks/useSignIn";
+import useSignUp from "../hooks/useSignUp";
 import { useNavigate } from "react-router-native";
-const SignIn = () => {
+const SignUp = () => {
     const initialValues = {
         username: "",
         password: "",
+        passwordConfirm: "",
     };
     const [signIn] = useSignIn();
+    const [signUp] = useSignUp();
     const navigate = useNavigate();
     const onSubmit = async (values) => {
         const { username, password } = values;
 
         try {
-            const data = await signIn({ username, password });
-            if (data) navigate("/");
+            const signUpData = await signUp({ username, password });
+            if (signUpData) {
+                const signInData = await signIn({ username, password });
+                if (signInData) navigate("/");
+            }
         } catch (e) {
             console.log(e);
         }
@@ -43,6 +49,7 @@ export const SignInContainer = ({
                 <View>
                     <FormikTextInput name='username' />
                     <FormikTextInput name='password' isPassword={true} />
+                    <FormikTextInput name='passwordConfirm' isPassword={true} />
                     <Button title='Submit' onPress={handleSubmit} />
                 </View>
             )}
@@ -50,4 +57,4 @@ export const SignInContainer = ({
     );
 };
 
-export default SignIn;
+export default SignUp;
