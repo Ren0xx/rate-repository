@@ -4,7 +4,7 @@ import { Formik } from "formik";
 import validationSchema from "../schemas/signUpValidationSchema";
 import useSignIn from "../hooks/useSignIn";
 import useSignUp from "../hooks/useSignUp";
-import { useNavigate } from "react-router-native";
+import { useNavigate } from "react-router-native";20
 const SignUp = () => {
     const initialValues = {
         username: "",

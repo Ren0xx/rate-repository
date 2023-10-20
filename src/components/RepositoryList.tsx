@@ -2,7 +2,9 @@ import { FlatList, View, StyleSheet, Image, Pressable } from "react-native";
 import { GET_REPOSITORIES } from "../graphql/queries";
 import { useQuery } from "@apollo/client";
 import Text from "./Text";
+import OrderSelection from "./OrderSeletion";
 import theme from "../theme";
+import { useState } from "react";
 import { useNavigate } from "react-router-native";
 const styles = StyleSheet.create({
     separator: {
@@ -158,8 +160,26 @@ export const Item = ({
 };
 
 const RepositoryList = () => {
+    const [orderBy, setOrderBy] = useState<"CREATED_AT" | "RATING_AVERAGE">(
+        "CREATED_AT"
+    );
+    const [orderDirection, setOrderDirection] = useState<"ASC" | "DESC">("ASC");
+
+    const setOrderingByLatest = () => {
+        setOrderBy("CREATED_AT");
+        setOrderDirection("DESC");
+    };
+    const setOrderingByHighestRating = () => {
+        setOrderBy("RATING_AVERAGE");
+        setOrderDirection("DESC");
+    };
+    const setOrderingByLowestRating = () => {
+        setOrderBy("RATING_AVERAGE");
+        setOrderDirection("ASC");
+    };
     const { data, error, loading } = useQuery(GET_REPOSITORIES, {
         fetchPolicy: "cache-and-network",
+        variables: { orderBy: orderBy, orderDirection: orderDirection },
     });
     if (loading) {
         return (
@@ -188,14 +208,17 @@ const RepositoryList = () => {
         );
     }
     return (
-        <RepositoryListContainer
-            repositories={data.repositories}
-            loading={loading}
-            error={error}
-        />
+        <>
+            <OrderSelection
+                setOrderingByLatest={setOrderingByLatest}
+                setOrderingByHighestRating={setOrderingByHighestRating}
+                setOrderingByLowestRating={setOrderingByLowestRating}
+            />
+            <RepositoryListContainer repositories={data.repositories} />
+        </>
     );
 };
-export const RepositoryListContainer = ({ repositories, loading, error }) => {
+export const RepositoryListContainer = ({ repositories }) => {
     const repositoryNodes = repositories
         ? repositories.edges.map((edge) => edge.node)
         : [];
