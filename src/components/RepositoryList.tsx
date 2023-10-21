@@ -1,10 +1,12 @@
 import { FlatList, View, StyleSheet, Image, Pressable } from "react-native";
 import { GET_REPOSITORIES } from "../graphql/queries";
 import { useQuery } from "@apollo/client";
+import debounce from "lodash/debounce";
 import Text from "./Text";
-import OrderSelection from "./OrderSeletion";
+import OrderSelection from "./OrderSelection";
+import SearchBar from "./SearchBar";
 import theme from "../theme";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-native";
 const styles = StyleSheet.create({
     separator: {
@@ -164,7 +166,10 @@ const RepositoryList = () => {
         "CREATED_AT"
     );
     const [orderDirection, setOrderDirection] = useState<"ASC" | "DESC">("ASC");
-
+    const [searchInput, setSearchInput] = useState<string>("");
+    const handleSearchInputChange = (query: string) => {
+        setSearchInput(query);
+    };
     const setOrderingByLatest = () => {
         setOrderBy("CREATED_AT");
         setOrderDirection("DESC");
@@ -209,23 +214,44 @@ const RepositoryList = () => {
     }
     return (
         <>
+            <SearchBar
+                searchInput={searchInput}
+                handleSearchInputChange={handleSearchInputChange}
+            />
             <OrderSelection
                 setOrderingByLatest={setOrderingByLatest}
                 setOrderingByHighestRating={setOrderingByHighestRating}
                 setOrderingByLowestRating={setOrderingByLowestRating}
             />
-            <RepositoryListContainer repositories={data.repositories} />
+            <RepositoryListContainer
+                repositories={data.repositories}
+                searchInput={searchInput}
+            />
         </>
     );
 };
-export const RepositoryListContainer = ({ repositories }) => {
-    const repositoryNodes = repositories
-        ? repositories.edges.map((edge) => edge.node)
-        : [];
+export const RepositoryListContainer = ({ repositories, searchInput }) => {
+    const [filteredRepositories, setFilteredRepositories] = useState([]);
 
+    const filterRepositories = () => {
+        const filteredData = repositories
+            ? repositories.edges
+                  .map((edge) => edge.node)
+                  .filter((item) => {
+                      return item.fullName.toLowerCase().includes(searchInput);
+                  })
+            : [];
+
+        setFilteredRepositories(filteredData);
+    };
+
+    const debouncedFilter = debounce(filterRepositories, 500);
+    useEffect(() => {
+        debouncedFilter();
+    }, [searchInput]);
     return (
         <FlatList
-            data={repositoryNodes}
+            data={filteredRepositories}
             ItemSeparatorComponent={ItemSeparator}
             renderItem={({ item }) => (
                 <Item

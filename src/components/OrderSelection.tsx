@@ -28,7 +28,7 @@ const OrderSelection = ({
                     visible={visible}
                     onDismiss={closeMenu}
                     anchor={<Button onPress={openMenu}>Show menu</Button>}
-                    anchorPosition="top">
+                    anchorPosition='top'>
                     <Menu.Item
                         onPress={setOrderingByLatest}
                         title='Latest Repositories'
