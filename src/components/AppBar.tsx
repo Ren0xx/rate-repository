@@ -2,7 +2,7 @@ import { View, StyleSheet, ScrollView, Pressable } from "react-native";
 import theme from "../theme";
 import AppBarTab from "./AppBarTab";
 import { useQuery } from "@apollo/client";
-import { IS_LOGGED } from "../graphql/queries";
+import { GET_CURRENT_USER } from "../graphql/queries";
 import Text from "./Text";
 import useAuthStorage from "../hooks/useAuthStorage";
 import { useApolloClient } from "@apollo/client";
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 });
 
 const AppBar = () => {
-    const { data, error, loading } = useQuery(IS_LOGGED, {
+    const { data, error, loading } = useQuery(GET_CURRENT_USER, {
         fetchPolicy: "cache-and-network",
     });
     return (
@@ -32,6 +32,9 @@ const AppBar = () => {
                 <AppBarTab name={"Repositories"} to={"/"} />
                 {!loading && data.me !== null && (
                     <AppBarTab name={"Create a review"} to={"/create-review"} />
+                )}
+                {!loading && data.me !== null && (
+                    <AppBarTab name='My reviews' to='my-reviews' />
                 )}
                 {!loading && <SignInOrSignOut data={data} />}
                 {!loading && data.me === null && (

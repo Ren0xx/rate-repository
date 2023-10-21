@@ -22,11 +22,24 @@ export const GET_REPOSITORIES = gql`
         }
     }
 `;
-export const IS_LOGGED = gql`
-    query {
+export const GET_CURRENT_USER = gql`
+    query getCurrentUser($includeReviews: Boolean = false) {
         me {
-            id
-            username
+            reviews @include(if: $includeReviews) {
+                edges {
+                    node {
+                        # review fields...
+                        id
+                        text
+                        rating
+                        createdAt
+                        user {
+                            id
+                            username
+                        }
+                    }
+                }
+            }
         }
     }
 `;

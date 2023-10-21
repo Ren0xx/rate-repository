@@ -46,7 +46,7 @@ const RepositoryInfo = ({ repository }) => {
         </View>
     );
 };
-const ReviewItem = ({ review }) => {
+export const ReviewItem = ({ review }) => {
     return (
         <View style={style.itemContainer}>
             <View style={style.rating}>
