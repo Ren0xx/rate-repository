@@ -1,7 +1,6 @@
 import { FlatList, View, StyleSheet, Image, Pressable } from "react-native";
 import { GET_REPOSITORIES } from "../graphql/queries";
 import { useQuery } from "@apollo/client";
-import debounce from "lodash/debounce";
 import Text from "./Text";
 import OrderSelection from "./OrderSelection";
 import SearchBar from "./SearchBar";
@@ -184,7 +183,11 @@ const RepositoryList = () => {
     };
     const { data, error, loading } = useQuery(GET_REPOSITORIES, {
         fetchPolicy: "cache-and-network",
-        variables: { orderBy: orderBy, orderDirection: orderDirection },
+        variables: {
+            orderBy,
+            orderDirection,
+            searchKeyword: searchInput,
+        },
     });
     if (loading) {
         return (
@@ -223,35 +226,18 @@ const RepositoryList = () => {
                 setOrderingByHighestRating={setOrderingByHighestRating}
                 setOrderingByLowestRating={setOrderingByLowestRating}
             />
-            <RepositoryListContainer
-                repositories={data.repositories}
-                searchInput={searchInput}
-            />
+            <RepositoryListContainer repositories={data.repositories} />
         </>
     );
 };
-export const RepositoryListContainer = ({ repositories, searchInput }) => {
-    const [filteredRepositories, setFilteredRepositories] = useState([]);
+export const RepositoryListContainer = ({ repositories }) => {
+    const repositoriesData = repositories
+        ? repositories.edges.map((edge) => edge.node)
+        : [];
 
-    const filterRepositories = () => {
-        const filteredData = repositories
-            ? repositories.edges
-                  .map((edge) => edge.node)
-                  .filter((item) => {
-                      return item.fullName.toLowerCase().includes(searchInput);
-                  })
-            : [];
-
-        setFilteredRepositories(filteredData);
-    };
-
-    const debouncedFilter = debounce(filterRepositories, 500);
-    useEffect(() => {
-        debouncedFilter();
-    }, [searchInput]);
     return (
         <FlatList
-            data={filteredRepositories}
+            data={repositoriesData}
             ItemSeparatorComponent={ItemSeparator}
             renderItem={({ item }) => (
                 <Item

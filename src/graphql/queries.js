@@ -4,8 +4,13 @@ export const GET_REPOSITORIES = gql`
     query Repositories(
         $orderDirection: OrderDirection
         $orderBy: AllRepositoriesOrderBy
+        $searchKeyword: String
     ) {
-        repositories(orderBy: $orderBy, orderDirection: $orderDirection) {
+        repositories(
+            orderBy: $orderBy
+            orderDirection: $orderDirection
+            searchKeyword: $searchKeyword
+        ) {
             edges {
                 node {
                     ownerAvatarUrl
@@ -33,6 +38,7 @@ export const GET_CURRENT_USER = gql`
                         text
                         rating
                         createdAt
+                        repositoryId
                         user {
                             id
                             username
