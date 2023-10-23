@@ -180,15 +180,18 @@ const RepositoryList = () => {
         setOrderBy("RATING_AVERAGE");
         setOrderDirection("ASC");
     };
-    const onEndReach = () => {
-        console.log("You have reached the end of the list");
-    };
+
     const { repositories, fetchMore, loading, error, ...result } =
         useRepositories({
             orderBy,
             orderDirection,
             searchKeyword: searchInput,
+            first: 8,
         });
+    const onEndReach = () => {
+        fetchMore();
+        console.log("end");
+    };
     if (loading) {
         return (
             <View>

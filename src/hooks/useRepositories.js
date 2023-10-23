@@ -5,7 +5,6 @@ const useRepositories = (variables) => {
         GET_REPOSITORIES,
         {
             variables,
-            // ...
         }
     );
 
