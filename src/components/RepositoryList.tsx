@@ -1,11 +1,10 @@
 import { FlatList, View, StyleSheet, Image, Pressable } from "react-native";
-import { GET_REPOSITORIES } from "../graphql/queries";
-import { useQuery } from "@apollo/client";
+import useRepositories from "../hooks/useRepositories";
 import Text from "./Text";
 import OrderSelection from "./OrderSelection";
 import SearchBar from "./SearchBar";
 import theme from "../theme";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-native";
 const styles = StyleSheet.create({
     separator: {
@@ -181,14 +180,15 @@ const RepositoryList = () => {
         setOrderBy("RATING_AVERAGE");
         setOrderDirection("ASC");
     };
-    const { data, error, loading } = useQuery(GET_REPOSITORIES, {
-        fetchPolicy: "cache-and-network",
-        variables: {
+    const onEndReach = () => {
+        console.log("You have reached the end of the list");
+    };
+    const { repositories, fetchMore, loading, error, ...result } =
+        useRepositories({
             orderBy,
             orderDirection,
             searchKeyword: searchInput,
-        },
-    });
+        });
     if (loading) {
         return (
             <View>
@@ -226,11 +226,14 @@ const RepositoryList = () => {
                 setOrderingByHighestRating={setOrderingByHighestRating}
                 setOrderingByLowestRating={setOrderingByLowestRating}
             />
-            <RepositoryListContainer repositories={data.repositories} />
+            <RepositoryListContainer
+                repositories={repositories}
+                onEndReach={onEndReach}
+            />
         </>
     );
 };
-export const RepositoryListContainer = ({ repositories }) => {
+export const RepositoryListContainer = ({ repositories, onEndReach }) => {
     const repositoriesData = repositories
         ? repositories.edges.map((edge) => edge.node)
         : [];
@@ -239,6 +242,8 @@ export const RepositoryListContainer = ({ repositories }) => {
         <FlatList
             data={repositoriesData}
             ItemSeparatorComponent={ItemSeparator}
+            onEndReached={onEndReach}
+            onEndReachedThreshold={0.5}
             renderItem={({ item }) => (
                 <Item
                     id={item.id}
